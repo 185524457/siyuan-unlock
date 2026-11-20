@@ -3,6 +3,7 @@ index c1f30b5..24eca99 100644
 --- a/kernel/conf/system.go
 +++ b/kernel/conf/system.go
 @@ -73,7 +73,7 @@ type Onboarding struct {
+ 
  func NewSystem() *System {
  	return &System{
  		NetworkProxy:       &NetworkProxy{},
@@ -51,7 +52,7 @@ index 3a9fd93..535e449 100644
  	githubAPIReleaseCacheSeconds = int64(6 * 60 * 60)
  	maxChecksumManifestSize      = int64(1024 * 1024)
  )
-@@ -81,9 +81,6 @@ var (
+@@ -80,10 +80,7 @@ var (
  
  func getUpdateRelease(force bool) (*updateRelease, error) {
  	channel := Conf.System.Load().UpdateChannel
@@ -61,3 +62,10 @@ index 3a9fd93..535e449 100644
  	if !isValidUpdateChannel(channel) {
  		return nil, errors.New("update channel is invalid")
  	}
+-	return getGitHubUpdateRelease(channel, force)
++	release, err := getGitHubUpdateRelease(channel, force)
++	if err == nil {
++		rememberUpdateReleaseURL(release)
++	}
++	return release, err
+ }
